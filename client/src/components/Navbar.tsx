@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useTransition } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "./ui/button";
@@ -12,29 +12,27 @@ import { toast } from "sonner";
 export function Navbar() {
 	const pathname = usePathname();
 	const Router = useRouter();
-	const [isLoggingOut, setIsLoggingOut] = useState(false);
+	const [isPending, startTransition] = useTransition();
 	const [dropdownOpen, setDropdownOpen] = useState(false);
 
 	const handleLogout = async () => {
-		setIsLoggingOut(true);
-		try {
-			const res = await fetch("http://localhost:3001/api/auth/signout", {
-				method: "GET",
-				credentials: "include",
-			});
+		startTransition(async () => {
+			try {
+				const res = await fetch("http://localhost:3001/api/auth/signout", {
+					method: "GET",
+					credentials: "include",
+				});
 
-			if (res.status === 200) {
-				toast.success("Logged out successfully");
-				Router.push("/login");
-			} else {
-				toast.error("Failed to logout");
+				if (res.status === 200) {
+					toast.success("Logged out successfully");
+					Router.push("/login");
+				} else {
+					toast.error("Failed to logout");
+				}
+			} catch (error) {
+				toast.error("Network error occurred");
 			}
-		} catch (error) {
-			toast.error("Network error occurred");
-		} finally {
-			setIsLoggingOut(false);
-			setDropdownOpen(false);
-		}
+		});
 	};
 
 	return (
@@ -69,10 +67,10 @@ export function Navbar() {
 								<DropdownMenuItem>Settings</DropdownMenuItem>
 								<DropdownMenuItem 
 									onClick={handleLogout} 
-									disabled={isLoggingOut}
+									disabled={isPending}
 									className="text-red-600"
 								>
-									{isLoggingOut ? (
+									{isPending ? (
 										<>
 											<Loader2 className="h-4 w-4 mr-2 animate-spin" />
 											Logging out...

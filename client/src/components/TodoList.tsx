@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTransition } from "react";
-import { TodoInput } from "./TodoInput";
+import TodoForm from "../components/TodoForm";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Trash2 } from "lucide-react";
@@ -32,7 +32,7 @@ export function TodoList({ initialTodos }: { initialTodos: Todo[] }) {
 				<CardTitle className="text-2xl font-bold text-center">My Todo List</CardTitle>
 			</CardHeader>
 			<CardContent className="space-y-4">
-				<TodoInput />
+				<TodoForm />
 
 				{todos.length === 0 ? (
 					<div className="text-center text-gray-500 py-4">No todos yet. Add one above!</div>

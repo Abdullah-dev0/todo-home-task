@@ -7,7 +7,7 @@ interface TodoItemProps {
   onDelete: (id: string) => void;
 }
 
-const TodoItem: FC<TodoItemProps> = ({ todo, onToggle, onDelete }) => {
+const Tododelete: FC<TodoItemProps> = ({ todo, onToggle, onDelete }) => {
   return (
     <div className="flex items-center justify-between p-4 bg-white rounded-lg shadow mb-2">
       <div className="flex items-center gap-3">
@@ -31,4 +31,4 @@ const TodoItem: FC<TodoItemProps> = ({ todo, onToggle, onDelete }) => {
   );
 };
 
-export default TodoItem;
+export default Tododelete;
