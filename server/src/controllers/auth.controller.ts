@@ -42,7 +42,7 @@ export const signup = async (req: Request, res: Response) => {
 			path: "/",
 		});
 
-		res.json({ message: "Login successful" });
+		res.json({ message: "Signup  successful" });
 	} catch (error) {
 		res.status(500).json({ message: "Something went wrong" });
 	}
@@ -71,8 +71,28 @@ export const login = async (req: Request, res: Response) => {
 				token,
 			},
 		});
+		res.cookie("auth_token", token, {
+			httpOnly: true,
+			secure: process.env.NODE_ENV === "production", // true in production
+			sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+			maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+			path: "/",
+		});
 
-		res.json(token);
+		res.json({ message: "Login  successful" });
+	} catch (error) {
+		res.status(500).json({ message: "Something went wrong" });
+	}
+};
+
+export const logout = async (req: Request, res: Response) => {
+	try {
+		const token = req.cookies.auth_token;
+
+		await prisma.session.deleteMany({ where: { token } });
+
+		res.clearCookie("auth_token");
+		res.status(200).json({ message: "Logout successful" });
 	} catch (error) {
 		res.status(500).json({ message: "Something went wrong" });
 	}
