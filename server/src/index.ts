@@ -4,6 +4,7 @@ import morgan from "morgan";
 import authRoutes from "./routes/auth.routes";
 import userRouter from "./routes/protected.routes";
 import cookieParser from "cookie-parser";
+import todoRouter from "./routes/todo.routes";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -26,6 +27,7 @@ app.get("/health", (req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api", userRouter);
+app.use("/api/todo", todoRouter);
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 	console.error(err.stack);

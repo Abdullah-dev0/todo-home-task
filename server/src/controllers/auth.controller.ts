@@ -1,13 +1,21 @@
-import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
-
-const prisma = new PrismaClient();
+import { prisma } from "../lib/PrismaClient";
+import { signInSchema, signUpSchema } from "../lib/schema/schema";
 
 export const signup = async (req: Request, res: Response) => {
 	try {
-		const { email, password, name } = req.body;
+		const result = signUpSchema.safeParse(req.body);
+
+		if (!result.success) {
+			return res.status(400).json({
+				message: "Validation failed",
+				errors: result.error.flatten().fieldErrors,
+			});
+		}
+
+		const { email, password, name } = result.data;
 
 		const existingUser = await prisma.user.findUnique({ where: { email } });
 
@@ -42,15 +50,25 @@ export const signup = async (req: Request, res: Response) => {
 			path: "/",
 		});
 
-		res.json({ message: "Signup  successful" });
+		res.json({ message: "Signup  successful", user: { user } });
 	} catch (error) {
-		res.status(500).json({ message: "Something went wrong" });
+		res.status(500).json({ message: "Internal server error" });
 	}
 };
 
 export const login = async (req: Request, res: Response) => {
 	try {
-		const { email, password } = req.body;
+		// Validate request body
+		const result = signInSchema.safeParse(req.body);
+
+		if (!result.success) {
+			return res.status(400).json({
+				message: "Validation failed",
+				errors: result.error.flatten().fieldErrors,
+			});
+		}
+
+		const { email, password } = result.data;
 
 		const user = await prisma.user.findUnique({ where: { email } });
 
@@ -79,9 +97,9 @@ export const login = async (req: Request, res: Response) => {
 			path: "/",
 		});
 
-		res.json({ message: "Login  successful" });
+		res.json({ message: "Login  successful", user: { user } });
 	} catch (error) {
-		res.status(500).json({ message: "Something went wrong" });
+		res.status(500).json({ message: "Internal server error" });
 	}
 };
 
@@ -90,7 +108,7 @@ export const logout = async (req: Request, res: Response) => {
 		const token = req.cookies.auth_token;
 
 		await prisma.session.deleteMany({ where: { token } });
-
+		// clear all cookies
 		res.clearCookie("auth_token");
 		res.status(200).json({ message: "Logout successful" });
 	} catch (error) {

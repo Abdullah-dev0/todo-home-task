@@ -1,34 +1,28 @@
-import Navbar from "@/components/Navbar";
-import { TodoList } from "@/components/TodoList";
-import UserProfile from "@/components/UserProfile";
-import { getUser } from "@/lib/api";
+import { Navbar } from "@/components/Navbar";
+import { TodoList } from "@/components/todo-list";
+import TodoForm from "@/components/TodoForm";
+import { getTodos } from "@/lib/queries";
 import { Suspense } from "react";
 
-const Dashboard = async () => {
-	const data = getUser();
-
-	const todos = [
-		{ id: "1", text: "Buy groceries", completed: false },
-		{ id: "2", text: "Walk the dog", completed: true },
-		{ id: "3", text: "Do laundry", completed: false },
-	];
-
+export default function Dashboard() {
+	const todos = getTodos();
 	return (
-		<>
+		<div className="min-h-screen">
 			<Navbar />
-			<div className="min-h-screen bg-gradient-to-b from-blue-100 to-white py-12 px-4 sm:px-6 lg:px-8">
-				<div className="max-w-3xl mx-auto space-y-8">
+			<main className="container  mx-auto px-4 py-7">
+				<div className="space-y-8">
 					<div className="text-center">
-						<h1 className="text-4xl font-bold text-gray-900">Dashboard</h1>
-						<p className="mt-2 text-xl text-gray-600">Welcome to your personal task manager</p>
+						<h1 className="text-4xl font-bold text-foreground">My Todos List</h1>
+						<p className="mt-2 text-xl text-muted-foreground">Manage your tasks efficiently</p>
 					</div>
-					<Suspense fallback={<div className="text-center text-gray-600">Loading todos...</div>}>
-						<TodoList initialTodos={todos} />
-					</Suspense>
+					<div className="bg-card rounded-lg shadow-sm border p-6">
+						<TodoForm />
+						<Suspense fallback={<div>Loading...</div>}>
+							<TodoList initialTodos={todos} />
+						</Suspense>
+					</div>
 				</div>
-			</div>
-		</>
+			</main>
+		</div>
 	);
-};
-
-export default Dashboard;
+}

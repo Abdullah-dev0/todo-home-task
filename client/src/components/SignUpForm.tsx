@@ -1,6 +1,5 @@
 "use client";
 
-import { signUp } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,10 +10,12 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { useForm } from "react-hook-form";
+import { useUser } from "@/lib/auth/userContext";
 import { toast } from "sonner";
 
 export function SignupForm() {
 	const [isLoading, startAction] = useTransition();
+	const { setUser } = useUser();
 	const router = useRouter();
 
 	const {
@@ -49,6 +50,7 @@ export function SignupForm() {
 				}
 
 				toast.success("Account created successfully!");
+				setUser(responseData.user);
 				router.push("/login");
 			} catch (error) {
 				toast.error("Failed to connect to the server. Please try again.");

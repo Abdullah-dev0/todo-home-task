@@ -1,19 +1,14 @@
 "use client";
 
-import React, { useState, useTransition } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Button } from "./ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
-import { User, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useTransition } from "react";
 import { toast } from "sonner";
+import { ModeToggle } from "./mode-toggle";
+import { UserButton } from "./user-button";
 
 export function Navbar() {
-	const pathname = usePathname();
 	const Router = useRouter();
 	const [isPending, startTransition] = useTransition();
-	const [dropdownOpen, setDropdownOpen] = useState(false);
 
 	const handleLogout = async () => {
 		startTransition(async () => {
@@ -36,51 +31,17 @@ export function Navbar() {
 	};
 
 	return (
-		<nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-			<div className="container flex h-14 items-center">
-				<div className="mr-4 flex">
-					<Link href="/" className="flex items-center space-x-2">
-						<span className="font-bold text-xl">✅ TodoApp</span>
-					</Link>
-				</div>
-
-				<div className="flex items-center space-x-6 justify-between flex-1">
-					<div className="flex gap-6">
-						<Link
-							href="/dashboard"
-							className={`text-sm font-medium transition-colors hover:text-primary ${
-								pathname === "/dashboard" ? "text-foreground" : "text-foreground/60"
-							}`}>
-							Dashboard
-						</Link>
+		<nav className="border-b bg-background/95 backdrop-blur p-5 supports-[backdrop-filter]:bg-background/60">
+			<div className="container flex  max-w-screen-2xl items-center">
+				<div className="flex flex-1 items-center justify-between">
+					<div className="flex items-center space-x-2">
+						<a href="/" className="flex items-center space-x-2">
+							<span className="font-bold inline-block">Todos</span>
+						</a>
 					</div>
-
-					<div className="flex items-center space-x-4">
-						<DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
-							<DropdownMenuTrigger asChild>
-								<Button variant="ghost" size="icon">
-									<User className="h-5 w-5" />
-								</Button>
-							</DropdownMenuTrigger>
-							<DropdownMenuContent align="end">
-								<DropdownMenuItem>Profile</DropdownMenuItem>
-								<DropdownMenuItem>Settings</DropdownMenuItem>
-								<DropdownMenuItem 
-									onClick={handleLogout} 
-									disabled={isPending}
-									className="text-red-600"
-								>
-									{isPending ? (
-										<>
-											<Loader2 className="h-4 w-4 mr-2 animate-spin" />
-											Logging out...
-										</>
-									) : (
-										"Logout"
-									)}
-								</DropdownMenuItem>
-							</DropdownMenuContent>
-						</DropdownMenu>
+					<div className="flex items-center space-x-2">
+						<ModeToggle />
+						<UserButton isLoading={isPending} handleSignout={handleLogout} />
 					</div>
 				</div>
 			</div>

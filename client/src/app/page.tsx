@@ -1,10 +1,11 @@
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import React from "react";
 
-export default function AuthPage() {
+const Home = () => {
 	return (
-		<Link href="/signup">
-			<Button>Signin</Button>
-		</Link>
+		<div>
+			<h1 className="text-4xl">Home</h1>
+		</div>
 	);
-}
+};
+
+export default Home;

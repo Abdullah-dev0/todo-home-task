@@ -10,11 +10,7 @@ interface JwtPayload {
 
 export const authenticateUser = async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		console.log("All cookies:", req.cookies); // Add this line
-
 		const token = req.cookies.auth_token;
-
-		console.log(token, "this is token");
 
 		if (!token) {
 			return res.status(401).json({ message: "Authentication required" });
@@ -22,7 +18,7 @@ export const authenticateUser = async (req: Request, res: Response, next: NextFu
 
 		const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
 
-		console.log(decoded, "this is decoded");
+		// also checks if its a valid session and expire
 
 		const session = await prisma.session.findFirst({
 			where: {
@@ -36,6 +32,20 @@ export const authenticateUser = async (req: Request, res: Response, next: NextFu
 
 		if (!session) {
 			return res.status(401).json({ message: "Invalid session" });
+		}
+
+		// Check if session is expired (7 days)
+		const sessionAge = Date.now() - new Date(session.createdAt).getTime();
+		const maxAge = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
+
+		if (sessionAge > maxAge) {
+			// Delete expired session
+			await prisma.session.delete({
+				where: {
+					id: session.id,
+				},
+			});
+			return res.status(401).json({ message: "Session expired" });
 		}
 
 		req.user = session.user;

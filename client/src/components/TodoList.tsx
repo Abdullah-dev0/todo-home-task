@@ -1,75 +1,69 @@
 "use client";
 
-import { useState } from "react";
-import { useTransition } from "react";
-import TodoForm from "../components/TodoForm";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Trash2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useRouter } from "next/navigation";
+import { use, useTransition } from "react";
+import { toast } from "sonner";
+import TodoForm from "../components/TodoForm";
+import { TodoItem } from "./TodoItems";
 
-type Todo = {
-	id: string;
-	text: string;
-	completed: boolean;
-};
-
-export function TodoList({ initialTodos }: { initialTodos: Todo[] }) {
-	const [todos, setTodos] = useState(initialTodos);
+export function TodoList({ initialTodos }: any) {
+	const { todos }: any = use(initialTodos);
 	const [isPending, startTransition] = useTransition();
+	const Router = useRouter();
 
 	const handleToggleTodo = async (id: string) => {
 		startTransition(async () => {});
 	};
 
 	const handleDeleteTodo = async (id: string) => {
-		startTransition(async () => {});
+		startTransition(async () => {
+			try {
+				const response = await fetch(`http://localhost:3001/api/todo/deletetodo/${id}`, {
+					method: "DELETE",
+					headers: { "Content-Type": "application/json" },
+					credentials: "include",
+				});
+
+				if (response.status !== 200) {
+					throw new Error("Failed to delete todo");
+				}
+
+				toast.success("Todo deleted successfully");
+				Router.refresh();
+			} catch (error: any) {
+				toast.error("Failed to delete todo", {
+					description: error.message,
+				});
+			}
+		});
 	};
 
 	return (
-		<Card className="w-full max-w-md mx-auto">
-			<CardHeader>
-				<CardTitle className="text-2xl font-bold text-center">My Todo List</CardTitle>
-			</CardHeader>
-			<CardContent className="space-y-4">
-				<TodoForm />
-
+		<div className="space-y-6">
+			<TodoForm />
+			{/* <TodoTabs
+				activeTab={activeTab}
+				onTabChange={setActiveTab}
+				allCount={todos.length}
+				dueCount={todos.filter((t) => !t.completed).length}
+				completedCount={todos.filter((t) => t.completed).length}
+			/> */}
+			<div className="space-y-4">
 				{todos.length === 0 ? (
-					<div className="text-center text-gray-500 py-4">No todos yet. Add one above!</div>
+					<div className="text-center py-12 text-muted-foreground">No todos yet.</div>
 				) : (
-					<div className="space-y-2">
-						{todos.map((todo) => (
-							<div
-								key={todo.id}
-								className="flex items-center justify-between p-3 bg-gray-50 rounded-md hover:bg-gray-100 transition-colors">
-								<div className="flex items-center space-x-2 flex-1">
-									<Checkbox
-										id={`todo-${todo.id}`}
-										checked={todo.completed}
-										onCheckedChange={() => handleToggleTodo(todo.id)}
-										disabled={isPending}
-										aria-label={`Mark "${todo.text}" as ${todo.completed ? "incomplete" : "complete"}`}
-									/>
-									<label
-										htmlFor={`todo-${todo.id}`}
-										className={`text-sm ${todo.completed ? "line-through text-gray-500" : "text-gray-800"}`}>
-										{todo.text}
-									</label>
-								</div>
-								<Button
-									variant="ghost"
-									size="icon"
-									onClick={() => handleDeleteTodo(todo.id)}
-									disabled={isPending}
-									aria-label={`Delete "${todo.text}"`}
-									className="opacity-0 group-hover:opacity-100 transition-opacity">
-									<Trash2 className="h-4 w-4" />
-								</Button>
-							</div>
-						))}
-					</div>
+					todos.map((todo: any) => (
+						<TodoItem
+							key={todo.id}
+							todo={todo}
+							onToggle={handleToggleTodo}
+							onDelete={handleDeleteTodo}
+							isPending={isPending}
+						/>
+					))
 				)}
-			</CardContent>
-		</Card>
+			</div>
+		</div>
 	);
 }

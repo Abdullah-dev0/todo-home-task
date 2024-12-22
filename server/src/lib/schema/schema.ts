@@ -17,14 +17,5 @@ export const signUpSchema = z
 		path: ["confirmPassword"],
 	});
 
-export const todoSchema = z.object({
-	title: z.string().min(3, "Title must be at least 3 characters").max(50, "Title must be less than 50 characters"),
-	description: z
-		.string()
-		.min(5, "Description must be at least 5 characters")
-		.max(200, "Description must be less than 200 characters"),
-});
-
-export type TodoFormData = z.infer<typeof todoSchema>;
 export type SignInFormData = z.infer<typeof signInSchema>;
 export type SignUpFormData = z.infer<typeof signUpSchema>;

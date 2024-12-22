@@ -1,6 +1,5 @@
 "use client";
 
-import { signIn } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -8,13 +7,18 @@ import { Label } from "@/components/ui/label";
 import { signInSchema, type SignInFormData } from "@/lib/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import Link from "next/link";
 import { useTransition } from "react";
+import { revalidateTag } from "next/cache";
+import { useUser } from "@/lib/auth/userContext";
 
 export function LoginForm() {
 	const [isLoading, startAction] = useTransition();
+	const { setUser } = useUser();
+	const router = useRouter();
 	const {
 		register,
 		handleSubmit,
@@ -25,12 +29,35 @@ export function LoginForm() {
 
 	const onSubmit = (data: SignInFormData) => {
 		startAction(async () => {
-			const res = await signIn(data);
-			if (!res.success) {
-				toast.error(res.errors?.email || res.errors?.password || "An error occurred");
-				return;
+			try {
+				const res = await fetch("http://localhost:3001/api/auth/signin", {
+					method: "POST",
+					credentials: "include",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify(data),
+				});
+
+				const responseData = await res.json();
+
+				console.log(responseData);
+
+				if (!res.ok) {
+					if (res.status === 400) {
+						toast.error(responseData.message || "User already exists");
+						return;
+					}
+					toast.error(responseData.message || "Something went wrong");
+					return;
+				}
+
+				toast.success("Login successfully!");
+				setUser(responseData.user);
+				router.push("/dashboard");
+			} catch (error) {
+				toast.error("Failed to connect to the server. Please try again.");
 			}
-			toast.success(res.message);
 		});
 	};
 
