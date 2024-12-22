@@ -4,7 +4,7 @@ import TodoForm from "@/components/TodoForm";
 import { getTodos } from "@/lib/queries";
 import { Suspense } from "react";
 
-export default function Dashboard() {
+export default async function Dashboard() {
 	const todos = getTodos();
 	return (
 		<div className="min-h-screen">
