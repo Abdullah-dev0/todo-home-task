@@ -1,53 +1,70 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { TodoFormData, todoSchema } from "@/lib/schemas";
+import { useState, useTransition } from "react";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useTransition } from "react";
-import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { todoSchema, TodoFormData } from "@/lib/schemas";
 
-export function TodoForm() {
+interface TodoFormProps {
+	type: "create" | "update";
+	todoId?: string;
+	title?: string;
+	description?: string;
+	closeDialog?: () => void;
+}
+
+export function TodoForm({ type, todoId, title, description, closeDialog }: TodoFormProps) {
 	const router = useRouter();
 	const [isPending, startTransition] = useTransition();
+
+	console.log(todoId, "recived	");
+
 	const form = useForm<TodoFormData>({
 		resolver: zodResolver(todoSchema),
 		defaultValues: {
-			title: "",
-			description: "",
+			title: title || "",
+			description: description || "",
 		},
 	});
 
 	const onSubmit = async (data: TodoFormData) => {
 		startTransition(async () => {
 			try {
-				const response = await fetch("http://localhost:3001/api/todo/addtodo", {
-					method: "POST",
+				const endpoint =
+					type === "create"
+						? "http://localhost:3001/api/todo/addtodo"
+						: `http://localhost:3001/api/todo/updatetodo/${todoId}`;
+
+				const response = await fetch(endpoint, {
+					method: type === "create" ? "POST" : "PUT",
 					headers: { "Content-Type": "application/json" },
 					credentials: "include",
 					body: JSON.stringify(data),
 				});
 
 				if (!response.ok) {
-					throw new Error("Failed to create todo");
+					throw new Error(`Failed to ${type} todo`);
 				}
 
-				toast.success("Todo created successfully");
+				toast.success(`Todo ${type}d successfully`);
+				if (closeDialog) closeDialog();
 				router.refresh();
-				form.reset();
+				if (type === "create") form.reset();
 			} catch (error) {
-				toast.error("Failed to create todo");
+				toast.error(`Failed to ${type} todo`);
 			}
 		});
 	};
 
 	return (
 		<Form {...form}>
-			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 text-lg">
+			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
 				<FormField
 					control={form.control}
 					name="title"
@@ -77,7 +94,9 @@ export function TodoForm() {
 				/>
 
 				<Button type="submit" disabled={isPending} className="w-full">
-					{isPending ? "Creating..." : "Create Todo"}
+					{isPending
+						? `${type === "create" ? "Creating" : "Updating"}...`
+						: `${type === "create" ? "Create" : "Update"} Todo`}
 				</Button>
 			</form>
 		</Form>

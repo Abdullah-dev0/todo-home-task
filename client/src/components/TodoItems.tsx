@@ -1,10 +1,19 @@
 "use client";
 
-import { format } from "date-fns";
-import { Trash2, Clock, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "@/components/ui/dialog";
+import { format } from "date-fns";
+import { ChevronDown, ChevronUp, Clock, Edit2, Trash2 } from "lucide-react";
 import { useState } from "react";
+import TodoForm from "./TodoForm";
 
 interface TodoItemProps {
 	todo: any;
@@ -47,6 +56,7 @@ export function TodoItem({ todo, onToggle, onDelete, isPending }: TodoItemProps)
 						aria-label={`Delete "${todo.title}"`}>
 						<Trash2 className="h-4 w-4" />
 					</Button>
+					{!todo.completed && <UpdateDialog todoId={todo.id} title={todo.title} description={todo.description} />}
 					<Button
 						variant="ghost"
 						size="icon"
@@ -62,3 +72,37 @@ export function TodoItem({ todo, onToggle, onDelete, isPending }: TodoItemProps)
 		</div>
 	);
 }
+
+export const UpdateDialog = ({
+	title,
+	description,
+	todoId,
+}: {
+	title: string;
+	description: string;
+	todoId: string;
+}) => {
+	const [isOpen, setIsOpen] = useState(false);
+	return (
+		<Dialog open={isOpen} onOpenChange={setIsOpen}>
+			<DialogTrigger asChild>
+				<Button variant="ghost" size="icon" aria-label="Edit todo">
+					<Edit2 className="h-4 w-4" />
+				</Button>
+			</DialogTrigger>
+			<DialogContent>
+				<DialogHeader>
+					<DialogTitle>Update Todo</DialogTitle>
+					<DialogDescription>Make changes to your todo item here.</DialogDescription>
+				</DialogHeader>
+				<TodoForm
+					closeDialog={() => setIsOpen(false)} // Pass close function here
+					title={title}
+					description={description}
+					todoId={todoId}
+					type={"update"}
+				/>
+			</DialogContent>
+		</Dialog>
+	);
+};

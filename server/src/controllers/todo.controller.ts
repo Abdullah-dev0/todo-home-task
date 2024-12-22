@@ -102,21 +102,24 @@ export const toggleTodo = async (req: Request, res: Response) => {
 
 export const updateTodo = async (req: Request, res: Response) => {
 	try {
-		const { id, title, description, completed } = req.body;
-		const userId = req?.user?.id;
+		const { title, description } = req.body;
+		const { id: todoId } = req.params;
+
+		console.log(req.body);
 
 		const todo = await prisma.todo.update({
 			where: {
-				id,
+				id: todoId,
 			},
 			data: {
 				title,
 				description,
-				completed,
 			},
 		});
+
 		res.status(200).json({ todo });
 	} catch (error) {
+		console.log(error);
 		res.status(500).json({ message: "Something went wrong" });
 	}
 };

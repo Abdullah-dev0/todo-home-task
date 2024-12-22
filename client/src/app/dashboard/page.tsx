@@ -16,7 +16,7 @@ export default function Dashboard() {
 						<p className="mt-2 text-xl text-muted-foreground">Manage your tasks efficiently</p>
 					</div>
 					<div className="bg-card rounded-lg shadow-sm border p-6">
-						<TodoForm />
+						<TodoForm type={"create"} />
 						<Suspense fallback={<div>Loading...</div>}>
 							<TodoList initialTodos={todos} />
 						</Suspense>
