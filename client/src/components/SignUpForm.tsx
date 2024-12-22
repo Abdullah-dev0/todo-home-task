@@ -4,13 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useUser } from "@/lib/auth/userContext";
 import { signUpSchema, type SignUpFormData } from "@/lib/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { useForm } from "react-hook-form";
-import { useUser } from "@/lib/auth/userContext";
 import { toast } from "sonner";
 
 export function SignupForm() {
@@ -29,7 +29,7 @@ export function SignupForm() {
 	const onSubmit = async (data: SignUpFormData) => {
 		startAction(async () => {
 			try {
-				const res = await fetch("http://localhost:3001/api/auth/signup", {
+				const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/signup`, {
 					method: "POST",
 					credentials: "include",
 					headers: {

@@ -5,6 +5,7 @@ import { useTransition } from "react";
 import { toast } from "sonner";
 import { ModeToggle } from "./mode-toggle";
 import { UserButton } from "./user-button";
+import Link from "next/link";
 
 export function Navbar() {
 	const Router = useRouter();
@@ -13,7 +14,7 @@ export function Navbar() {
 	const handleLogout = async () => {
 		startTransition(async () => {
 			try {
-				const res = await fetch("http://localhost:3001/api/auth/signout", {
+				const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/signout`, {
 					method: "GET",
 					credentials: "include",
 				});
@@ -35,9 +36,7 @@ export function Navbar() {
 			<div className="container flex  max-w-screen-2xl items-center">
 				<div className="flex flex-1 items-center justify-between">
 					<div className="flex items-center space-x-2">
-						<a href="/" className="flex items-center space-x-2">
-							<span className="font-bold inline-block">Todos</span>
-						</a>
+						<Link href="/dashboard">Todo App</Link>
 					</div>
 					<div className="flex items-center space-x-2">
 						<ModeToggle />

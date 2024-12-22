@@ -20,7 +20,7 @@ export function useUser(): UserContextType {
 
 export function UserProvider({ children, userPromise }: { children: ReactNode; userPromise: Promise<any | null> }) {
 	let initialUser = use(userPromise);
-	let [user, setUser] = useState<any | null>(initialUser);
+	const [user, setUser] = useState<any | null>(initialUser);
 
 	useEffect(() => {
 		setUser(initialUser);

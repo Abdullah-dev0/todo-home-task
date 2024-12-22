@@ -1,21 +1,13 @@
+import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import { prisma } from "../lib/PrismaClient";
-import { signInSchema, signUpSchema } from "../lib/schema/schema";
+
+const prisma = new PrismaClient();
 
 export const signup = async (req: Request, res: Response) => {
 	try {
-		const result = signUpSchema.safeParse(req.body);
-
-		if (!result.success) {
-			return res.status(400).json({
-				message: "Validation failed",
-				errors: result.error.flatten().fieldErrors,
-			});
-		}
-
-		const { email, password, name } = result.data;
+		const { email, password, name } = req.body;
 
 		const existingUser = await prisma.user.findUnique({ where: { email } });
 
@@ -50,25 +42,15 @@ export const signup = async (req: Request, res: Response) => {
 			path: "/",
 		});
 
-		res.json({ message: "Signup  successful", user: { user } });
+		res.json({ message: "Signup  successful" });
 	} catch (error) {
-		res.status(500).json({ message: "Internal server error" });
+		res.status(500).json({ message: "Something went wrong" });
 	}
 };
 
 export const login = async (req: Request, res: Response) => {
 	try {
-		// Validate request body
-		const result = signInSchema.safeParse(req.body);
-
-		if (!result.success) {
-			return res.status(400).json({
-				message: "Validation failed",
-				errors: result.error.flatten().fieldErrors,
-			});
-		}
-
-		const { email, password } = result.data;
+		const { email, password } = req.body;
 
 		const user = await prisma.user.findUnique({ where: { email } });
 
@@ -91,15 +73,16 @@ export const login = async (req: Request, res: Response) => {
 		});
 		res.cookie("auth_token", token, {
 			httpOnly: true,
-			secure: process.env.NODE_ENV === "production", // true in production
-			sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-			maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+			secure: true, // Always true in production
+			sameSite: "none", // Required for cross-domain cookies
+			domain: process.env.COOKIE_DOMAIN, // e.g., '.yourdomain.com'
+			maxAge: 7 * 24 * 60 * 60 * 1000,
 			path: "/",
 		});
 
-		res.json({ message: "Login  successful", user: { user } });
+		res.json({ message: "Login  successful" });
 	} catch (error) {
-		res.status(500).json({ message: "Internal server error" });
+		res.status(500).json({ message: "Something went wrong" });
 	}
 };
 
@@ -108,7 +91,7 @@ export const logout = async (req: Request, res: Response) => {
 		const token = req.cookies.auth_token;
 
 		await prisma.session.deleteMany({ where: { token } });
-		// clear all cookies
+
 		res.clearCookie("auth_token");
 		res.status(200).json({ message: "Logout successful" });
 	} catch (error) {

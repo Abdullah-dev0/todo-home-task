@@ -13,6 +13,8 @@ app.use(
 	cors({
 		origin: "http://localhost:3000",
 		credentials: true,
+		// set cookies
+		allowedHeaders: ["Content-Type", "Authorization", "set-cookie"],
 	}),
 );
 

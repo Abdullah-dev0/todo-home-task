@@ -6,14 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { signInSchema, type SignInFormData } from "@/lib/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
+import { useUser } from "@/lib/auth/userContext";
 import Link from "next/link";
 import { useTransition } from "react";
-import { revalidateTag } from "next/cache";
-import { useUser } from "@/lib/auth/userContext";
 
 export function LoginForm() {
 	const [isLoading, startAction] = useTransition();
@@ -30,7 +29,7 @@ export function LoginForm() {
 	const onSubmit = (data: SignInFormData) => {
 		startAction(async () => {
 			try {
-				const res = await fetch("http://localhost:3001/api/auth/signin", {
+				const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/signin`, {
 					method: "POST",
 					credentials: "include",
 					headers: {

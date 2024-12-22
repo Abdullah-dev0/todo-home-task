@@ -1,8 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import { User, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -11,6 +8,8 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Loader2, User } from "lucide-react";
+import { useState } from "react";
 
 type UserButtonProps = {
 	handleSignout: () => void;

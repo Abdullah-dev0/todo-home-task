@@ -1,15 +1,15 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { todoSchema, TodoFormData } from "@/lib/schemas";
+import { TodoFormData, todoSchema } from "@/lib/schemas";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+import { useTransition } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 interface TodoFormProps {
 	type: "create" | "update";
@@ -22,8 +22,6 @@ interface TodoFormProps {
 export function TodoForm({ type, todoId, title, description, closeDialog }: TodoFormProps) {
 	const router = useRouter();
 	const [isPending, startTransition] = useTransition();
-
-	console.log(todoId, "recived	");
 
 	const form = useForm<TodoFormData>({
 		resolver: zodResolver(todoSchema),
@@ -38,8 +36,8 @@ export function TodoForm({ type, todoId, title, description, closeDialog }: Todo
 			try {
 				const endpoint =
 					type === "create"
-						? "http://localhost:3001/api/todo/addtodo"
-						: `http://localhost:3001/api/todo/updatetodo/${todoId}`;
+						? `${process.env.NEXT_PUBLIC_API_URL}/api/todo/addtodo`
+						: `${process.env.NEXT_PUBLIC_API_URL}/api/todo/updatetodo/${todoId}`;
 
 				const response = await fetch(endpoint, {
 					method: type === "create" ? "POST" : "PUT",

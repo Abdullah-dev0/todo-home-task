@@ -1,13 +1,11 @@
 "use client";
 
-import { use, useOptimistic, useTransition } from "react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
 import { Todo } from "@/types/todo";
+import { useRouter } from "next/navigation";
+import { use, useOptimistic, useState, useTransition } from "react";
 import { toast } from "sonner";
-import { TodoItem } from "./TodoItems";
 import { TodoTabs } from "./todo-tabs";
-import TodoForm from "./TodoForm";
+import { TodoItem } from "./TodoItems";
 
 interface TodoListProps {
 	initialTodos: Promise<{ todos: Todo[] }>;
@@ -41,7 +39,7 @@ export function TodoList({ initialTodos }: TodoListProps) {
 			try {
 				addOptimisticTodo({ type: "toggle", id });
 
-				const response = await fetch(`http://localhost:3001/api/todo/toggletodo/${id}`, {
+				const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/todo/toggletodo/${id}`, {
 					method: "PATCH",
 					credentials: "include",
 					headers: {
@@ -65,7 +63,7 @@ export function TodoList({ initialTodos }: TodoListProps) {
 	const handleDeleteTodo = async (id: string) => {
 		startTransition(async () => {
 			try {
-				const response = await fetch(`http://localhost:3001/api/todo/deletetodo/${id}`, {
+				const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/todo/deletetodo/${id}`, {
 					method: "DELETE",
 					headers: { "Content-Type": "application/json" },
 					credentials: "include",
