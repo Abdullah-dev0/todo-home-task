@@ -52,8 +52,10 @@ export function SignupForm() {
 				toast.success("Account created successfully!");
 				setUser(responseData.user);
 				router.push("/login");
-			} catch (error) {
-				toast.error("Failed to connect to the server. Please try again.");
+			} catch (error: any) {
+				toast.error("Network error occurred", {
+					description: error.message,
+				});
 			}
 		});
 	};

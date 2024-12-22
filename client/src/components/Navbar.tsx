@@ -25,8 +25,10 @@ export function Navbar() {
 				} else {
 					toast.error("Failed to logout");
 				}
-			} catch (error) {
-				toast.error("Network error occurred");
+			} catch (error: any) {
+				toast.error("Network error occurred", {
+					description: error.message,
+				});
 			}
 		});
 	};

@@ -54,8 +54,10 @@ export function TodoForm({ type, todoId, title, description, closeDialog }: Todo
 				if (closeDialog) closeDialog();
 				router.refresh();
 				if (type === "create") form.reset();
-			} catch (error) {
-				toast.error(`Failed to ${type} todo`);
+			} catch (error: any) {
+				toast.error("Network error occurred", {
+					description: error.message,
+				});
 			}
 		});
 	};

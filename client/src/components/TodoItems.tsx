@@ -16,6 +16,7 @@ import { useState } from "react";
 import TodoForm from "./TodoForm";
 
 interface TodoItemProps {
+	// @ts-ignore
 	todo: any;
 	onToggle: (id: string) => void;
 	onDelete: (id: string) => void;
