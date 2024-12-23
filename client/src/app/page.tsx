@@ -17,7 +17,7 @@ export default function Home() {
 							Get Started
 						</Button>
 					</Link>
-					<Link href="/signin">
+					<Link href="/login">
 						<Button className=" hover:opacity-90 py-3 px-4 rounded-lg text-lg font-semibold  transition-colors duration-200">
 							<LogIn className="mr-2" size={24} />
 							Sign In
