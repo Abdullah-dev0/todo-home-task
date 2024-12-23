@@ -1,5 +1,3 @@
-export const revalidate = 0;
-
 import { Navbar } from "@/components/Navbar";
 import { TodoList } from "@/components/todo-list";
 import TodoForm from "@/components/TodoForm";
@@ -7,7 +5,7 @@ import { getTodos } from "@/lib/queries";
 import { Suspense } from "react";
 
 export default async function Dashboard() {
-	const todos = await getTodos();
+	const todos = getTodos();
 	return (
 		<div className="min-h-screen">
 			<Navbar />
