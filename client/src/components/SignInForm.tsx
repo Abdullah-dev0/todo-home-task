@@ -40,8 +40,6 @@ export function LoginForm() {
 
 				const responseData = await res.json();
 
-				console.log(responseData);
-
 				if (!res.ok) {
 					if (res.status === 400) {
 						toast.error(responseData.message || "User already exists");

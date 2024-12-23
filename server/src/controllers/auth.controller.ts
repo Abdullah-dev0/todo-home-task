@@ -34,15 +34,15 @@ export const signup = async (req: Request, res: Response) => {
 			},
 		});
 
-		res.cookie("auth_token", token, {
-			httpOnly: true,
-			secure: process.env.NODE_ENV === "production", // true in production
-			sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-			maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-			path: "/",
-		});
-
-		res.json({ message: "Signup  successful" });
+		// Properly set the cookie with the token
+		res
+			.setHeader(
+				"Set-Cookie",
+				`auth_token=${token}; HttpOnly; Max-Age=3600; Path=/; SameSite=Strict; Secure=${
+					process.env.NODE_ENV === "production"
+				}`,
+			)
+			.json({ message: "Signup  successful" });
 	} catch (error) {
 		res.status(500).json({ message: "Something went wrong" });
 	}
@@ -71,16 +71,16 @@ export const login = async (req: Request, res: Response) => {
 				token,
 			},
 		});
-		res.cookie("auth_token", token, {
-			httpOnly: true,
-			secure: true, // Always true in production
-			sameSite: "none", // Required for cross-domain cookies
-			domain: process.env.COOKIE_DOMAIN, // e.g., '.yourdomain.com'
-			maxAge: 7 * 24 * 60 * 60 * 1000,
-			path: "/",
-		});
 
-		res.json({ message: "Login  successful" });
+		// Properly set the cookie with the token
+		res
+			.setHeader(
+				"Set-Cookie",
+				`auth_token=${token}; HttpOnly; Max-Age=3600; Path=/; SameSite=Strict; Secure=${
+					process.env.NODE_ENV === "production"
+				}`,
+			)
+			.json({ message: "Login successful" });
 	} catch (error) {
 		res.status(500).json({ message: "Something went wrong" });
 	}
