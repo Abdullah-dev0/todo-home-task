@@ -1,6 +1,6 @@
 import React from "react";
 
-const Home = () => {
+const Home = async () => {
 	return (
 		<div>
 			<h1 className="text-4xl">Home</h1>
