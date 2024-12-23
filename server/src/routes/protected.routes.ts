@@ -6,7 +6,6 @@ const userRouter = Router();
 // Protected route example
 userRouter.get("/profile", authenticateUser, async (req, res) => {
 	try {
-		await new Promise((resolve) => setTimeout(resolve, 4000));
 		const user = await prisma.user.findUnique({
 			where: { id: req?.user?.id },
 			select: {
