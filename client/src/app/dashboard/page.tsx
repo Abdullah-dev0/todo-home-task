@@ -17,7 +17,7 @@ export default async function Dashboard() {
 		},
 	});
 
-	const todos = await res.json();
+	const { todos } = await res.json();
 
 	return (
 		<div className="min-h-screen">
@@ -31,7 +31,7 @@ export default async function Dashboard() {
 					<div className="bg-card rounded-lg shadow-sm border p-6">
 						<TodoForm type={"create"} />
 						<Suspense fallback={<div>Loading...</div>}>
-							<TodoList initialTodos={todos} />
+							<TodoList todos={todos} />
 						</Suspense>
 					</div>
 				</div>

@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
+import { json } from "stream/consumers";
 
 const prisma = new PrismaClient();
 
@@ -34,15 +35,10 @@ export const signup = async (req: Request, res: Response) => {
 			},
 		});
 
-		// Properly set the cookie with the token
-		res
-			.setHeader(
-				"Set-Cookie",
-				`auth_token=${token}; HttpOnly; Max-Age=3600; Path=/; SameSite=Strict; Secure=${
-					process.env.NODE_ENV === "production"
-				}`,
-			)
-			.json({ message: "Signup  successful" });
+		return res
+			.status(200)
+			.setHeader("Set-Cookie", `auth_token=${token}; Path=/; HttpOnly; Max-Age=3600; SameSite=lax`)
+			.json({ message: "Signup successfully" });
 	} catch (error) {
 		res.status(500).json({ message: "Something went wrong" });
 	}
@@ -51,7 +47,6 @@ export const signup = async (req: Request, res: Response) => {
 export const login = async (req: Request, res: Response) => {
 	try {
 		const { email, password } = req.body;
-
 		const user = await prisma.user.findUnique({ where: { email } });
 
 		if (!user) {
@@ -72,17 +67,9 @@ export const login = async (req: Request, res: Response) => {
 			},
 		});
 
-		// Properly set the cookie with the token
-		res
-			.setHeader(
-				"Set-Cookie",
-				`auth_token=${token}; HttpOnly; Max-Age=3600; Path=/; SameSite=Strict; Secure=${
-					process.env.NODE_ENV === "production"
-				}`,
-			)
-			.json({ message: "Login successful" });
+		return res.status(200).json({ message: "Signin  successfully", token: token });
 	} catch (error) {
-		res.status(500).json({ message: "Something went wrong" });
+		return res.status(500).json({ message: "Something went wrong" });
 	}
 };
 

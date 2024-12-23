@@ -8,12 +8,12 @@ import { TodoTabs } from "./todo-tabs";
 import { TodoItem } from "./TodoItems";
 
 interface TodoListProps {
-	initialTodos: Promise<{ todos: Todo[] }>;
+	todos: any;
 }
 
-export function TodoList({ initialTodos }: TodoListProps) {
+export function TodoList({ todos }: TodoListProps) {
 	// @ts-ignore - TODO: Fix types for use hook with Promise
-	const { todos } = use(initialTodos);
+
 	const [isPending, startTransition] = useTransition();
 	const router = useRouter();
 

@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { useUser } from "@/lib/auth/userContext";
 import Link from "next/link";
 import { useTransition } from "react";
+import { Login } from "@/actions/auth";
 
 export function LoginForm() {
 	const [isLoading, startAction] = useTransition();
@@ -28,35 +29,14 @@ export function LoginForm() {
 
 	const onSubmit = (data: SignInFormData) => {
 		startAction(async () => {
-			try {
-				const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/signin`, {
-					method: "POST",
-					credentials: "include",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify(data),
-				});
-
-				const responseData = await res.json();
-
-				if (!res.ok) {
-					if (res.status === 400) {
-						toast.error(responseData.message || "User already exists");
-						return;
-					}
-					toast.error(responseData.message || "Something went wrong");
-					return;
-				}
-
-				toast.success("Login successfully!");
-				setUser(responseData.user);
+			const res = await Login(data);
+			if (res?.status === 200) {
 				router.push("/dashboard");
-			} catch (error: any) {
-				toast.error("Network error occurred", {
-					description: error.message,
-				});
+				return;
 			}
+			toast.error("Failed to login", {
+				description: "Invalid credentials",
+			});
 		});
 	};
 

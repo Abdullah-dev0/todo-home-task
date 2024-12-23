@@ -11,10 +11,11 @@ const PORT = process.env.PORT || 3001;
 
 app.use(
 	cors({
-		origin: ["http://localhost:3000", "https://todo-home-task.vercel.app"],
+		origin: ["https://todotask.techonline.live","http://localhost:3000"],
 		credentials: true,
-		// set cookies
-		allowedHeaders: ["Content-Type", "Authorization", "set-cookie"],
+		methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+		allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
+		exposedHeaders: ["set-cookie"],
 	}),
 );
 
