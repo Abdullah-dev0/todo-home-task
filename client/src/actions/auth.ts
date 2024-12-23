@@ -41,3 +41,10 @@ export const Login = async (data: SignInFormData) => {
 		console.log("Network error occurred", error.message);
 	}
 };
+
+export const signOut = async () => {
+	const cookieStore = await cookies();
+	cookieStore.delete("auth_token");
+
+	return { status: 200, body: { message: "Signout successfully" } };
+};

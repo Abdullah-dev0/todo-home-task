@@ -19,6 +19,8 @@ export default async function Dashboard() {
 
 	const { todos } = await res.json();
 
+	console.log(todos);
+
 	return (
 		<div className="min-h-screen">
 			<Navbar />

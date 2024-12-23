@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { ModeToggle } from "./mode-toggle";
 import { UserButton } from "./user-button";
 import Link from "next/link";
+import { signOut } from "@/actions/auth";
 
 export function Navbar() {
 	const Router = useRouter();
@@ -13,22 +14,11 @@ export function Navbar() {
 
 	const handleLogout = async () => {
 		startTransition(async () => {
-			try {
-				const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/signout`, {
-					method: "GET",
-					credentials: "include",
-				});
-
-				if (res.status === 200) {
-					toast.success("Logged out successfully");
-					Router.push("/login");
-				} else {
-					toast.error("Failed to logout");
-				}
-			} catch (error: any) {
-				toast.error("Network error occurred", {
-					description: error.message,
-				});
+			const res = await signOut();
+			if (res?.status === 200) {
+				Router.push("/login");
+				toast.success("Logged out successfully");
+				return;
 			}
 		});
 	};

@@ -12,6 +12,8 @@ export const authenticateUser = async (req: Request, res: Response, next: NextFu
 	try {
 		const token = req.cookies.auth_token;
 
+		console.log(token);
+
 		if (!token) {
 			return res.status(401).json({ message: "Authentication required" });
 		}
