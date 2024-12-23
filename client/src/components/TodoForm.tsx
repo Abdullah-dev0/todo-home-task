@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { createTodo, updateTodo } from "@/actions/todo";
 
 interface TodoFormProps {
 	type: "create" | "update";
@@ -34,30 +35,19 @@ export function TodoForm({ type, todoId, title, description, closeDialog }: Todo
 	const onSubmit = async (data: TodoFormData) => {
 		startTransition(async () => {
 			try {
-				const endpoint =
-					type === "create"
-						? `${process.env.NEXT_PUBLIC_API_URL}/api/todo/addtodo`
-						: `${process.env.NEXT_PUBLIC_API_URL}/api/todo/updatetodo/${todoId}`;
+				const result = type === "create" ? await createTodo(data) : await updateTodo(todoId!, data);
 
-				const response = await fetch(endpoint, {
-					method: type === "create" ? "POST" : "PUT",
-					headers: { "Content-Type": "application/json" },
-					credentials: "include",
-					body: JSON.stringify(data),
-				});
-
-				if (!response.ok) {
-					throw new Error(`Failed to ${type} todo`);
+				if (result.success) {
+					toast.success(result.message);
+					if (closeDialog) closeDialog();
+					if (type === "create") form.reset();
+				} else {
+					toast.error("Action failed", {
+						description: result.message,
+					});
 				}
-
-				toast.success(`Todo ${type}d successfully`);
-				if (closeDialog) closeDialog();
-				router.refresh();
-				if (type === "create") form.reset();
-			} catch (error: any) {
-				toast.error("Network error occurred", {
-					description: error.message,
-				});
+			} catch (error) {
+				toast.error("Something went wrong");
 			}
 		});
 	};
