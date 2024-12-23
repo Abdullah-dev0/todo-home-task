@@ -1,3 +1,5 @@
+export const revalidate = 0;
+
 import { Navbar } from "@/components/Navbar";
 import { TodoList } from "@/components/todo-list";
 import TodoForm from "@/components/TodoForm";
