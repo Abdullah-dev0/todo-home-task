@@ -5,7 +5,7 @@ import { getTodos } from "@/lib/queries";
 import { Suspense } from "react";
 
 export default async function Dashboard() {
-	const todos = getTodos();
+	const todos = await getTodos();
 	return (
 		<div className="min-h-screen">
 			<Navbar />
