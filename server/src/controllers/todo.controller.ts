@@ -25,16 +25,24 @@ export const getTodos = async (req: Request, res: Response) => {
 	try {
 		const userId = req?.user?.id;
 
+		if (!userId) {
+			return res.status(401).json({ message: "Unauthorized" });
+		}
+
 		const todos = await prisma.todo.findMany({
 			where: {
 				userId,
 			},
 		});
+
 		res.status(200).json({ todos });
 	} catch (error) {
 		res.status(500).json({ message: "Something went wrong" });
 	}
 };
+
+
+
 export const deleteTodo = async (req: Request, res: Response) => {
 	try {
 		const { id } = req.params; // Change to params instead of body

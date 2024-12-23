@@ -76,8 +76,7 @@ export const logout = async (req: Request, res: Response) => {
 
 		await prisma.session.deleteMany({ where: { token } });
 
-		res.clearCookie("auth_token");
-		res.status(200).json({ message: "Logout successful" });
+		res.status(200).json({ message: "session deleted" });
 	} catch (error) {
 		res.status(500).json({ message: "Something went wrong" });
 	}

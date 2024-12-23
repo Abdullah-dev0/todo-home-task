@@ -1,22 +1,19 @@
 "use client";
 
+import { deleteTodo, toggleTodo } from "@/actions/todo";
 import { Todo } from "@/types/todo";
-import { useRouter } from "next/navigation";
 import { use, useOptimistic, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { TodoTabs } from "./todo-tabs";
 import { TodoItem } from "./TodoItems";
-import { toggleTodo, deleteTodo } from "@/actions/todo";
 
 interface TodoListProps {
-	todos: any;
+	intialtodos: Promise<Todo[]>;
 }
 
-export function TodoList({ todos }: TodoListProps) {
-	// @ts-ignore - TODO: Fix types for use hook with Promise
-
+export function TodoList({ intialtodos }: TodoListProps) {
+	const todos = use(intialtodos);
 	const [isPending, startTransition] = useTransition();
-	const router = useRouter();
 
 	const [optimisticTodos, addOptimisticTodo] = useOptimistic(
 		todos,
@@ -75,17 +72,14 @@ export function TodoList({ todos }: TodoListProps) {
 				activeTab={activeTab}
 				onTabChange={setActiveTab}
 				allCount={todos.length}
-				// @ts-ignore
-				dueCount={todos.filter((t: any) => !t.completed).length}
-				// @ts-ignore
-				completedCount={todos.filter((t: any) => t.completed).length}
+				dueCount={todos.filter((t) => !t.completed).length}
+				completedCount={todos.filter((t) => t.completed).length}
 			/>
 			<div className="space-y-4">
 				{filterTodos.length === 0 ? (
 					<div className="text-center py-12 text-muted-foreground">No todos yet.</div>
 				) : (
-					// @ts-ignore
-					filterTodos.map((todo: any) => (
+					filterTodos.map((todo) => (
 						<TodoItem
 							key={todo.id}
 							todo={todo}

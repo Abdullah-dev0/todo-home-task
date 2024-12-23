@@ -3,6 +3,7 @@
 import { revalidatePath, revalidateTag } from "next/cache";
 import { TodoFormData } from "@/lib/schemas";
 import { cookies } from "next/headers";
+import { Todo } from "@/types/todo";
 
 export async function createTodo(data: TodoFormData) {
 	const authToken = (await cookies()).get("auth_token");
@@ -14,10 +15,6 @@ export async function createTodo(data: TodoFormData) {
 
 			body: JSON.stringify(data),
 		});
-
-		if (!res.ok) {
-			throw new Error("Failed to create todo");
-		}
 
 		revalidateTag("todos");
 		return { success: true, message: "Todo created successfully" };
@@ -87,9 +84,10 @@ export async function deleteTodo(id: string) {
 				Cookie: `auth_token=${authToken?.value}`,
 			},
 		});
+		const responseData = await res.json();
 
-		if (!res.ok) {
-			throw new Error("Failed to delete todo");
+		if (res.status !== 200) {
+			return { success: false, message: responseData.message || "Failed to delete todo" };
 		}
 
 		revalidateTag("todos");
@@ -100,5 +98,30 @@ export async function deleteTodo(id: string) {
 			success: false,
 			message: error instanceof Error ? error.message : "Failed to delete todo",
 		};
+	}
+}
+
+export async function getTodos() {
+	const authToken = (await cookies()).get("auth_token");
+
+	try {
+		const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/todo/gettodos`, {
+			method: "GET",
+			credentials: "include",
+			headers: {
+				"Content-Type": "application/json",
+				Cookie: `auth_token=${authToken?.value}`,
+			},
+			next: {
+				tags: ["todos"],
+			},
+		});
+
+		const resData = await res.json();
+
+		return resData.todos;
+	} catch (error) {
+		console.error("Failed to fetch todos:", error);
+		return { todos: [] };
 	}
 }

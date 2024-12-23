@@ -18,9 +18,9 @@ export const Login = async (data: SignInFormData) => {
 
 		if (!res.ok) {
 			if (res.status === 400) {
-				throw new Error(responseData.message || "Invalid credentials");
+				return { status: 400, body: { message: responseData.message } };
 			}
-			throw new Error(responseData.message || "Something went wrong");
+			return { status: res.status, body: { message: "Failed to signin" } };
 		}
 
 		const cookieStore = await cookies();
@@ -29,7 +29,7 @@ export const Login = async (data: SignInFormData) => {
 			httpOnly: true,
 			sameSite: "lax",
 			secure: process.env.NODE_ENV === "production",
-			expires: new Date(Date.now() + 3600 * 1000),
+			expires: new Date(Date.now() + 3600 * 1000 * 24 * 7),
 			path: "/",
 		});
 
@@ -65,7 +65,7 @@ export async function signUp(data: SignUpFormData) {
 			httpOnly: true,
 			sameSite: "lax",
 			secure: process.env.NODE_ENV === "production",
-			expires: new Date(Date.now() + 3600 * 1000),
+			expires: new Date(Date.now() + 3600 * 1000 * 24 * 7),
 			path: "/",
 		});
 
@@ -83,6 +83,19 @@ export async function signUp(data: SignUpFormData) {
 
 export const signOut = async () => {
 	const cookieStore = await cookies();
+
+	const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/signout`, {
+		method: "GET",
+		credentials: "include",
+		headers: {
+			"Content-Type": "application/json",
+			Cookie: `auth_token=${cookieStore.get("auth_token")?.value}`,
+		},
+	});
+
+	if (res.status !== 200) {
+		return { status: res.status, body: { message: "Failed to signout" } };
+	}
 	cookieStore.delete("auth_token");
 	return { status: 200, body: { message: "Signout successfully" } };
 };

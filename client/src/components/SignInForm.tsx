@@ -9,15 +9,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-
-import { useUser } from "@/lib/auth/userContext";
+import { Login } from "@/actions/auth";
 import Link from "next/link";
 import { useTransition } from "react";
-import { Login } from "@/actions/auth";
 
 export function LoginForm() {
 	const [isLoading, startAction] = useTransition();
-	const { setUser } = useUser();
 	const router = useRouter();
 	const {
 		register,
@@ -32,6 +29,7 @@ export function LoginForm() {
 			const res = await Login(data);
 			if (res?.status === 200) {
 				router.push("/dashboard");
+				toast.success("Logged in successfully");
 				return;
 			}
 			toast.error("Failed to login", {
