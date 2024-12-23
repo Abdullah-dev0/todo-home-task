@@ -1,11 +1,24 @@
 import { Navbar } from "@/components/Navbar";
 import { TodoList } from "@/components/todo-list";
 import TodoForm from "@/components/TodoForm";
-import { getTodos } from "@/lib/queries";
+import { cookies } from "next/headers";
 import { Suspense } from "react";
 
 export default async function Dashboard() {
-	const todos = getTodos();
+	const authToken = (await cookies()).get("auth_token");
+
+	const res = await fetch(`${process.env.BASE_API}/api/todo/gettodos`, {
+		method: "GET",
+		credentials: "include",
+
+		headers: {
+			"Content-Type": "application/json",
+			Cookie: `auth_token=${authToken?.value}`,
+		},
+	});
+
+	const todos = await res.json();
+
 	return (
 		<div className="min-h-screen">
 			<Navbar />

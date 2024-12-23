@@ -22,27 +22,3 @@ export const getUser = async () => {
 
 	return data;
 };
-
-export const getTodos = async () => {
-	try {
-		const authToken = (await cookies()).get("auth_token");
-
-		const res = await fetch(`${process.env.BASE_API}/api/todo/gettodos`, {
-			method: "GET",
-			credentials: "include",
-
-			headers: {
-				"Content-Type": "application/json",
-				Cookie: `auth_token=${authToken?.value}`,
-			},
-		});
-
-		const data = await res.json();
-
-		console.log(data);
-		return data;
-	} catch (error) {
-		console.error("Failed to fetch todos:", error);
-		return null;
-	}
-};
