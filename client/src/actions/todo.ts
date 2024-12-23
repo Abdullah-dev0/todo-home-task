@@ -41,9 +41,64 @@ export async function updateTodo(todoId: string, data: TodoFormData) {
 			throw new Error("Failed to update todo");
 		}
 
-		revalidatePath("/dashboard");
+		revalidateTag("todos");
 		return { success: true, message: "Todo updated successfully" };
 	} catch (error) {
 		return { success: false, message: error instanceof Error ? error.message : "Failed to update todo" };
+	}
+}
+
+export async function toggleTodo(id: string) {
+	const authToken = (await cookies()).get("auth_token");
+
+	try {
+		const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/todo/toggletodo/${id}`, {
+			method: "PATCH",
+			credentials: "include",
+			headers: {
+				"Content-Type": "application/json",
+				Cookie: `auth_token=${authToken?.value}`,
+			},
+		});
+
+		if (!res.ok) {
+			throw new Error("Failed to toggle todo");
+		}
+
+		revalidateTag("todos");
+		return { success: true, message: "Todo updated successfully" };
+	} catch (error) {
+		return {
+			success: false,
+			message: error instanceof Error ? error.message : "Failed to toggle todo",
+		};
+	}
+}
+
+export async function deleteTodo(id: string) {
+	const authToken = (await cookies()).get("auth_token");
+
+	try {
+		const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/todo/deletetodo/${id}`, {
+			method: "DELETE",
+			credentials: "include",
+			headers: {
+				"Content-Type": "application/json",
+				Cookie: `auth_token=${authToken?.value}`,
+			},
+		});
+
+		if (!res.ok) {
+			throw new Error("Failed to delete todo");
+		}
+
+		revalidateTag("todos");
+
+		return { success: true, message: "Todo deleted successfully" };
+	} catch (error) {
+		return {
+			success: false,
+			message: error instanceof Error ? error.message : "Failed to delete todo",
+		};
 	}
 }

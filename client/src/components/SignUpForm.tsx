@@ -1,5 +1,6 @@
 "use client";
 
+import { signUp } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -14,7 +15,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 export function SignupForm() {
-	const [isLoading, startAction] = useTransition();
+	const [isPending, startTransition] = useTransition();
 	const { setUser } = useUser();
 	const router = useRouter();
 
@@ -27,36 +28,20 @@ export function SignupForm() {
 	});
 
 	const onSubmit = async (data: SignUpFormData) => {
-		startAction(async () => {
-			try {
-				const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/signup`, {
-					method: "POST",
-					credentials: "include",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify(data),
-				});
+		startTransition(async () => {
+			const result = await signUp(data);
 
-				const responseData = await res.json();
-
-				if (!res.ok) {
-					if (res.status === 400) {
-						toast.error(responseData.message || "User already exists");
-						return;
-					}
-					toast.error(responseData.message || "Something went wrong");
+			if (!result.success) {
+				if (result.status === 400) {
+					toast.error(result.message || "User already exists");
 					return;
 				}
-
-				toast.success("Account created successfully!");
-				setUser(responseData.user);
-				router.push("/login");
-			} catch (error: any) {
-				toast.error("Network error occurred", {
-					description: error.message,
-				});
+				toast.error(result.message || "Something went wrong");
+				return;
 			}
+
+			toast.success(result.message);
+			router.push("/login");
 		});
 	};
 
@@ -95,8 +80,8 @@ export function SignupForm() {
 								/>
 								{errors.confirmPassword && <p className="text-sm text-red-500">{errors.confirmPassword.message}</p>}
 							</div>
-							<Button type="submit" className="w-full" disabled={isLoading}>
-								{isLoading ? "Signing up..." : "Sign Up"}
+							<Button type="submit" className="w-full" disabled={isPending}>
+								{isPending ? "Signing up..." : "Sign Up"}
 							</Button>
 						</div>
 						<div className="mt-4 text-center text-sm font-semibold">

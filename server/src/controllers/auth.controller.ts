@@ -35,10 +35,7 @@ export const signup = async (req: Request, res: Response) => {
 			},
 		});
 
-		return res
-			.status(200)
-			.setHeader("Set-Cookie", `auth_token=${token}; Path=/; HttpOnly; Max-Age=3600; SameSite=lax`)
-			.json({ message: "Signup successfully" });
+		return res.status(200).json({ message: "Signup successfully", token: token });
 	} catch (error) {
 		res.status(500).json({ message: "Something went wrong" });
 	}

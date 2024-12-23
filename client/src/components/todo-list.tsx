@@ -6,6 +6,7 @@ import { use, useOptimistic, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { TodoTabs } from "./todo-tabs";
 import { TodoItem } from "./TodoItems";
+import { toggleTodo, deleteTodo } from "@/actions/todo";
 
 interface TodoListProps {
 	todos: any;
@@ -39,22 +40,13 @@ export function TodoList({ todos }: TodoListProps) {
 		startTransition(async () => {
 			try {
 				addOptimisticTodo({ type: "toggle", id });
+				const result = await toggleTodo(id);
 
-				const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/todo/toggletodo/${id}`, {
-					method: "PATCH",
-					credentials: "include",
-					headers: {
-						"Content-Type": "application/json",
-					},
-				});
-
-				if (response.status !== 200) {
-					throw new Error("Failed to toggle todo");
+				if (!result.success) {
+					throw new Error(result.message);
 				}
 
-				toast.success("Todo updated successfully");
-
-				router.refresh();
+				toast.success(result.message);
 			} catch (error) {
 				toast.error("Failed to update todo");
 			}
@@ -64,22 +56,15 @@ export function TodoList({ todos }: TodoListProps) {
 	const handleDeleteTodo = async (id: string) => {
 		startTransition(async () => {
 			try {
-				const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/todo/deletetodo/${id}`, {
-					method: "DELETE",
-					headers: { "Content-Type": "application/json" },
-					credentials: "include",
-				});
+				const result = await deleteTodo(id);
 
-				if (response.status !== 200) {
-					throw new Error("Failed to delete todo");
+				if (!result.success) {
+					throw new Error(result.message);
 				}
 
-				toast.success("Todo deleted successfully");
-				router.refresh();
-			} catch (error: any) {
-				toast.error("Failed to delete todo", {
-					description: error.message,
-				});
+				toast.success(result.message);
+			} catch (error) {
+				toast.error("Failed to delete todo");
 			}
 		});
 	};
