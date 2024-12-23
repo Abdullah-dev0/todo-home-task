@@ -10,7 +10,9 @@ export default async function Dashboard() {
 	const res = await fetch(`${process.env.BASE_API}/api/todo/gettodos`, {
 		method: "GET",
 		credentials: "include",
-
+		next: {
+			tags: ["todos"],
+		},
 		headers: {
 			"Content-Type": "application/json",
 			Cookie: `auth_token=${authToken?.value}`,
