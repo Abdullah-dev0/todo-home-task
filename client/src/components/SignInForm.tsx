@@ -1,17 +1,17 @@
 "use client";
 
+import { Login } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { signInSchema, type SignInFormData } from "@/lib/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { Login } from "@/actions/auth";
-import Link from "next/link";
-import { useTransition } from "react";
 
 export function LoginForm() {
 	const [isLoading, startAction] = useTransition();

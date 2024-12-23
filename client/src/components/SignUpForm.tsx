@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useUser } from "@/lib/auth/userContext";
 import { signUpSchema, type SignUpFormData } from "@/lib/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
@@ -16,7 +15,6 @@ import { toast } from "sonner";
 
 export function SignupForm() {
 	const [isPending, startTransition] = useTransition();
-	const { setUser } = useUser();
 	const router = useRouter();
 
 	const {
@@ -30,7 +28,6 @@ export function SignupForm() {
 	const onSubmit = async (data: SignUpFormData) => {
 		startTransition(async () => {
 			const result = await signUp(data);
-
 			if (!result.success) {
 				if (result.status === 400) {
 					toast.error(result.message || "User already exists");
@@ -40,8 +37,8 @@ export function SignupForm() {
 				return;
 			}
 
+			router.push("/dashboard");
 			toast.success(result.message);
-			router.push("/login");
 		});
 	};
 

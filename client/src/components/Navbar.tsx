@@ -16,7 +16,7 @@ export function Navbar() {
 		startTransition(async () => {
 			const res = await signOut();
 			if (res?.status === 200) {
-				Router.push("/login");
+				Router.push("/");
 				toast.success("Logged out successfully");
 				return;
 			}

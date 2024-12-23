@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 3001;
 
 app.use(
 	cors({
-		origin: ["https://todotask.techonline.live","http://localhost:3000"],
+		origin: "https://todotask.techonline.live",
 		credentials: true,
 		methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
 		allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
@@ -35,6 +35,10 @@ app.use("/api/todo", todoRouter);
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 	console.error(err.stack);
 	res.status(500).json({ error: "Something broke!" });
+});
+
+app.get("/", (req: Request, res: Response) => {
+	res.send("Hello World");
 });
 
 app.listen(PORT, () => {
