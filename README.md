@@ -26,13 +26,19 @@ A RESTful API server for a todo application built with Node.js, Express, TypeScr
 
 ---
 
+Here’s the updated installation section, including steps for the Next.js client:
+
+---
+
 ## Installation (Local Development)
+
+### **Backend (Server)**
 
 1. **Clone the repository:**
 
 ```bash
 git clone <repository-url>
-cd todo-next/server
+cd todo-home-task/server
 ```
 
 2. **Install dependencies:**
@@ -59,6 +65,36 @@ npx prisma generate
 ```bash
 npm run dev
 ```
+
+---
+
+### **Frontend (Client)**
+
+1. **Navigate to the client directory:**
+
+```bash
+cd todo-home-task/client
+```
+
+2. **Install dependencies:**
+
+```bash
+npm install
+```
+
+3. **Create a `.env.local` file:**
+
+```env
+NEXT_PUBLIC_API_URL="http://localhost:3001"
+```
+
+4. **Start the development server:**
+
+```bash
+npm run dev
+```
+
+The client will be accessible at `http://localhost:3000`.
 
 ---
 
@@ -212,10 +248,8 @@ sudo apt install -y docker.io
 4. **Push the image To dockerhub:**
 
 ```bash
-
 sudo docker login
-sudo docker tag todo-next-server your-dockerhub-username/todo-next-server
-sudo docker push your-dockerhub-username/todo-next-server
+docker push your-dockerhub-username/todo-next-server
 ```
 
 5. **Run the Docker container:**
