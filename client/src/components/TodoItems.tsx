@@ -14,10 +14,10 @@ import { format } from "date-fns";
 import { ChevronDown, ChevronUp, Clock, Edit2, Trash2 } from "lucide-react";
 import { useState } from "react";
 import TodoForm from "./TodoForm";
+import { Todo } from "@/types/todo";
 
 interface TodoItemProps {
-	// @ts-ignore
-	todo: any;
+	todo: Todo;
 	onToggle: (id: string) => void;
 	onDelete: (id: string) => void;
 	isPending?: boolean;

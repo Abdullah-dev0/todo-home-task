@@ -1,9 +1,8 @@
 "use server";
 
-import { revalidatePath, revalidateTag } from "next/cache";
 import { TodoFormData } from "@/lib/schemas";
+import { revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
-import { Todo } from "@/types/todo";
 
 export async function createTodo(data: TodoFormData) {
 	const authToken = (await cookies()).get("auth_token");

@@ -115,7 +115,7 @@ export const getUser = async () => {
 	const data = await res.json();
 
 	if (res.status !== 200) {
-		return null;
+		return { status: res.status, body: { message: data.message } };
 	}
 
 	return data;
