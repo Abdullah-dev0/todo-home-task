@@ -2,13 +2,27 @@ import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import { json } from "stream/consumers";
+import { baseSignUpSchema, signInSchema, signUpSchema } from "../lib/schema/schema";
 
 const prisma = new PrismaClient();
 
 export const signup = async (req: Request, res: Response) => {
 	try {
 		const { email, password, name } = req.body;
+
+		// use zod validation here
+		const result = baseSignUpSchema.safeParse({
+			email,
+			password,
+			name,
+		});
+
+		if (!result.success) {
+			return res.status(400).json({
+				message: "Please provide valid data",
+				errors: result.error.errors,
+			});
+		}
 
 		const existingUser = await prisma.user.findUnique({ where: { email } });
 
@@ -44,6 +58,19 @@ export const signup = async (req: Request, res: Response) => {
 export const login = async (req: Request, res: Response) => {
 	try {
 		const { email, password } = req.body;
+
+		const result = signInSchema.safeParse({
+			email,
+			password,
+		});
+
+		if (!result.success) {
+			return res.status(400).json({
+				message: "Please provide valid data",
+				errors: result.error.errors,
+			});
+		}
+
 		const user = await prisma.user.findUnique({ where: { email } });
 
 		if (!user) {
