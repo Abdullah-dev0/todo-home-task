@@ -1,6 +1,7 @@
 "use server";
 
 import { SignInFormData, SignUpFormData } from "@/lib/schemas";
+import { revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
 
 export const Login = async (data: SignInFormData) => {
@@ -102,20 +103,34 @@ export const signOut = async () => {
 
 export const getUser = async () => {
 	const authToken = (await cookies()).get("auth_token");
+
+	if (!authToken?.value) {
+		return {
+			status: 401,
+			body: { message: "Unauthorized" },
+		};
+	}
+
 	const res = await fetch(`${process.env.BASE_API}/api/profile`, {
 		method: "GET",
 		credentials: "include",
-
+		cache: "force-cache",
+		next: {
+			tags: ["auth"],
+		},
 		headers: {
 			"Content-Type": "application/json",
-			Cookie: `auth_token=${authToken?.value}`,
+			Cookie: `auth_token=${authToken.value}`,
 		},
 	});
 
 	const data = await res.json();
 
 	if (res.status !== 200) {
-		return { status: res.status, body: { message: data.message } };
+		return {
+			status: res.status,
+			body: { message: data.message },
+		};
 	}
 
 	return data;

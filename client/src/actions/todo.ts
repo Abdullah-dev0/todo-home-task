@@ -103,10 +103,18 @@ export async function deleteTodo(id: string) {
 export async function getTodos() {
 	const authToken = (await cookies()).get("auth_token");
 
+	if (!authToken?.value) {
+		return {
+			success: false,
+			message: "Unauthorized",
+		};
+	}
+
 	try {
 		const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/todo/gettodos`, {
 			method: "GET",
 			credentials: "include",
+			cache: "force-cache",
 			headers: {
 				"Content-Type": "application/json",
 				Cookie: `auth_token=${authToken?.value}`,
